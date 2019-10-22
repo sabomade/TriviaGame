@@ -1,4 +1,29 @@
 body{
-    background-image: url("../images/bg.png");
+    background-image: url("../images/jungle.png");
     background-repeat: repeat;
+}
+.container{
+    background: black;
+    width: 55%;
+    height: 575px;
+    margin-top: 65px;
+}
+.title{
+    margin: 15px 0px;
+}
+h1{
+    font-family: 'Passion One', cursive;
+    color: chartreuse;
+    text-align: center;
+}
+.question{
+    margin: 25px 0px;
+}
+.option{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+p{
+    font-family: 'Open Sans', sans-serif;
 }
