@@ -5,7 +5,7 @@ body{
 .container{
     background: black;
     width: 55%;
-    height: 575px;
+    /* height: 575px; */
     margin-top: 65px;
 }
 .title{
@@ -16,14 +16,15 @@ h1{
     color: chartreuse;
     text-align: center;
 }
-.question{
-    margin: 25px 0px;
-}
-.option{
+.question, .option, .info{
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
+    margin: 25px 0px;
 }
+
 p{
     font-family: 'Open Sans', sans-serif;
+    color: whitesmoke;
+    text-align: center;
 }

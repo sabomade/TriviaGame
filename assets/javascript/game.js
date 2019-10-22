@@ -58,11 +58,45 @@ var trivia = [
     },
 ];
 
+var question=[];
 
 // FUNCTIONS
 //=========================
+function start(){
+    //write start button to DOM
+    var newBtn = $("button");
+    newBtn.attr("id", "startBtn").addClass("btn btn-light").text("Start");
+    newBtn.appendTo("#start");
+   
+    //on click hide button & call selectQuestion(arr)
+    $("#startBtn").on("click", function(){
+        $("#start").empty();
+        selectQuestion(trivia);
+    });
+}
 
 
+function selectQuestion(arr){
+    var numberOfItems = arr.length;
+    // console.log("# of items in trivia "+ numberOfItems);
+    
+    var randomIndex = Math.floor(Math.random()*numberOfItems);
+    // console.log("randomIndex: "+randomIndex);
+    
+    //parse keys:values from trivia[randomIndex]
+    question = trivia[randomIndex];
+    // console.log(question);
+    const q = question.q;
+    const a = question.a;
+    const info = question.info;
+
+    //call displayQuestion
+    displayQuestion(q, a, info);
+}
+
+function displayQuestion(arg1, arg2, arg3){
+    $(".question").html("<p>" + arg1+ "</p>");
+}
 
 
 
