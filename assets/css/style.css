@@ -28,3 +28,15 @@ p{
     color: whitesmoke;
     text-align: center;
 }
+.affirm, .affirm:hover{
+    background: green;
+    border: none;
+}
+.neg, .neg:hover{
+    background: red;
+    border: none;
+}
+.neutral, .neutral:hover{
+    background: grey;
+    border: none;
+}
