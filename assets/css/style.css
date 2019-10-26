@@ -16,7 +16,7 @@ h1{
     color: chartreuse;
     text-align: center;
 }
-.question, .option, .info{
+.question, .option, .info, .instructions{
     display: flex;
     justify-content: center;
     /* align-items: center; */
@@ -27,6 +27,13 @@ p{
     font-family: 'Open Sans', sans-serif;
     color: whitesmoke;
     text-align: center;
+}
+.gameOver{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 24px;
+    color: red;
+    text-transform: uppercase;
+    text-align:center;
 }
 .affirm, .affirm:hover{
     background: green;

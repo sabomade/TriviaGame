@@ -69,13 +69,20 @@ var trivia = [
 ];
 
 var question=[];
-// var questionsAsked=[];
+var timePerQuest = 5;
+var intervalId;
+var questionsCorrect = 0;
+var questionsWrong = 0;
+
+var tBtn = $("<button>");
+var fBtn = $("<button>");
+
 
 // FUNCTIONS
 //=========================
 function selectQuestion(arr){
     var numberOfItems = arr.length;
-    // console.log("# of items in trivia "+ numberOfItems);
+    console.log("# of items in array "+ numberOfItems);
     
     var randomIndex = Math.floor(Math.random()*numberOfItems);
     // console.log("randomIndex: "+randomIndex);
@@ -89,66 +96,114 @@ function selectQuestion(arr){
         const ans = question.a;
         const xtra = question.info;
 
+        console.log("======== next question ========");
         console.log("question: ", quest);
         console.log("answer: ", ans);
         console.log("more info: ", xtra);
+        console.log("asked: ", question.asked);
 
          //call displayQuestion
         displayQuestion(quest, ans, xtra);
-    }else{
-        trivia.splice(question);
-        selectQuestion(trivia);
+        question.asked = true;
+    }else if(question.asked === true){
+        arr.splice(randomIndex,1);
+        selectQuestion(arr);
     }
 
     // //adds current question to new array
     // questionsAsked.push(question);
 }
 
-function displayQuestion(arg1, arg2, arg3){
-    $(".question").html("<p>" + arg1+ "</p>");
+function displayQuestion(question, answer, info){
+    //clear more-info div
+    $("#more-info").empty();
 
-    $("#affirmative").on("click", function(){
-        if(arg2 === true){
-            $("#affirmative").addClass("affirm");
-            $("#negative").addClass("neutral");
-            $("#more-info").html("<p>"+ arg3+ "</p>");
-        }
-        else if(arg2 === false){
-            $("#affirmative").addClass("neg");
-            $("#negative").addClass("affirm");
-            $("#more-info").html("<p>"+ arg3+ "</p>");
-        }
-        //get next question
-        selectQuestion(trivia);
-    });
+    //write question to DOM
+    $(".question").html("<p>" + question+ "</p>");
 
-    $("#negative").on("click", function(){
-        if(arg2 === true){
-            $("#affirmative").addClass("neg");
-            $("#negative").addClass("affirm");
-            $("#more-info").html("<p>"+ arg3+ "</p>");
-        }
-        else if(arg2 === false){
-            $("#affirmative").addClass("neutral");
-            $("#negative").addClass("affirm");
-            $("#more-info").html("<p>"+ arg3+ "</p>");
-        }
-        
-        //get next question
-        selectQuestion(trivia);      
-    });
+    //on click of button ture or false
+    $(".option").on("click", function(){
+        // console.log("this: ", this);
+        const valueOfButton = $(this).children().attr('value');
+        // console.log("valueOfButton is " +  valueOfButton);
     
+        //compares strings: trivia[i].a = value of button clicked?
+        if(String(answer) === valueOfButton){
+           // $(this).children().addClass("affirm");
+           changeClassAff($(this).children());
+            $("#more-info").html("<p> Correct! <br>"+ info+ "</p>");
+            questionsCorrect++;
+            setTimeout(function(){
+                $(this).children().removeClass("affirm");
+            }, 3000)
+        }
+        else if(String(answer) !== valueOfButton){
+            //$(this).children().addClass("neg");
+            changeClassNeg($(this).children());
+            $("#more-info").html("<p>Wrong! <br>"+ info+ "</p>");
+            questionsWrong++;
+        }
 
+        //get next question
+        setTimeout(function() {
+            selectQuestion(trivia);
+            },3000)
+        
+        //reset question timer
+        timePerQuest = 5;
+       // timeStart();
+    });
 }
 
+function changeClassNeg(btn){
+    btn.addClass("neg");
+    setTimeout(function(){
+        btn.removeClass("neg");
+    }, 3000);
+}
 
+function changeClassAff(btn){
+    btn.addClass("affirm");
+    setTimeout(function(){
+        btn.removeClass("affirm");
+    }, 3000);
+}
 
+function timeStart(){
+    if(!intervalId){
+        intervalId = setInterval(decrement, 1000);
+    };
+}
+
+function decrement(){
+    timePerQuest--;
+    console.log(timePerQuest);
+    if(timePerQuest === 0){
+        stop();
+    }
+}
+
+function stop(){
+    clearInterval(intervalId);
+    intervalId = 0;
+
+     //print message to DOM
+     $("#readout").text("Time's Up!").addClass("gameOver");
+     $("#readout").append("<br>Correct Answers: "+questionsCorrect);
+     $("#readout").append("<br>Wrong Answers: "+questionsWrong);
+}
 
 // MAIN PROCESS
 //=========================
 function start(){
-    //clear button div
+    //clear divs
     $("#start").empty();
+    $("#readout").empty();
+    $("#more-info").empty();
+
+    //write instructions to DOM
+    $("#readout").append("<p>You have 10 seconds to answer each question once you press START.  If you don't answer a question in time, you lose a point.</p>")
+
     //write start button to DOM
     var newBtn = $("<button>");
     newBtn.attr("id", "startBtn").addClass("btn btn-light").text("Start");
@@ -157,7 +212,19 @@ function start(){
     //on click hide button & call selectQuestion(arr)
     $("#startBtn").on("click", function(){
         $("#start").empty();
+
         selectQuestion(trivia);
+        //timeStart();
+
+        //write true btn to DOM
+        tBtn.attr("id", "affirmative").attr("value", "true").addClass("btn btn-info").text("True");
+        tBtn.appendTo("#yes");
+        //console.log("tBtn= ", tBtn.attr("value"));
+
+        //write false btn to DOM
+        fBtn.attr("id", "negative").attr("value", "false").addClass("btn btn-info").text("False");
+        fBtn.appendTo("#no");
+        //console.log("nBtn= ", fBtn.attr("value"));
     });
 
 }
