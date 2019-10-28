@@ -69,8 +69,9 @@ var trivia = [
 ];
 
 var question=[];
-var timePerQuest = 5;
+var timePerQuest = 10;
 var intervalId;
+var questionsAsked = 0;
 var questionsCorrect = 0;
 var questionsWrong = 0;
 
@@ -82,60 +83,62 @@ var fBtn = $("<button>");
 //=========================
 function selectQuestion(arr){
     var numberOfItems = arr.length;
-    console.log("# of items in array "+ numberOfItems);
+    //console.log("# of items in array "+ numberOfItems);
     
     var randomIndex = Math.floor(Math.random()*numberOfItems);
-    // console.log("randomIndex: "+randomIndex);
+    console.log("randomIndex: "+randomIndex);
     
-
     //parse keys:values from trivia[randomIndex]
-    question = trivia[randomIndex];
-    // console.log(question);
+    question = arr[randomIndex];
+    console.log("current question: ", question);
+    
     if(question.asked === false){
-        const quest = question.q;
-        const ans = question.a;
-        const xtra = question.info;
-
-        console.log("======== next question ========");
-        console.log("question: ", quest);
-        console.log("answer: ", ans);
-        console.log("more info: ", xtra);
-        console.log("asked: ", question.asked);
-
-         //call displayQuestion
-        displayQuestion(quest, ans, xtra);
-        question.asked = true;
-    }else if(question.asked === true){
-        arr.splice(randomIndex,1);
+        //call displayQuestion
+        displayQuestion(question);
+    }else if(question.asked !== false & questionsAsked !== arr.length){
+        //get a new question    
         selectQuestion(arr);
+    }else{
+        gameEnd();
     }
-
-    // //adds current question to new array
-    // questionsAsked.push(question);
 }
 
-function displayQuestion(question, answer, info){
+function displayQuestion(question){
+    //set question.asked to true & increase counter
+    question.asked = true;
+    questionsAsked++;
+
     //clear more-info div
     $("#more-info").empty();
 
+    //assign object properties to variables
+    const quest = question.q;
+    const answer = question.a;
+    const info = question.info;
+    const asked = question.asked;
+
+    console.log("======== current question ========");
+    console.log("question: ", quest);
+    console.log("answer: ", answer);
+    console.log("more info: ", info);
+    console.log("asked: ", asked);
+    
+
     //write question to DOM
-    $(".question").html("<p>" + question+ "</p>");
+    $(".question").html("<p>" + quest + "</p>");
 
     //on click of button ture or false
     $(".option").on("click", function(){
         // console.log("this: ", this);
         const valueOfButton = $(this).children().attr('value');
-        // console.log("valueOfButton is " +  valueOfButton);
+        console.log("valueOfButton is " +  valueOfButton);
     
-        //compares strings: trivia[i].a = value of button clicked?
+        //compares strings: ans = value of button clicked?
         if(String(answer) === valueOfButton){
            // $(this).children().addClass("affirm");
            changeClassAff($(this).children());
             $("#more-info").html("<p> Correct! <br>"+ info+ "</p>");
             questionsCorrect++;
-            setTimeout(function(){
-                $(this).children().removeClass("affirm");
-            }, 3000)
         }
         else if(String(answer) !== valueOfButton){
             //$(this).children().addClass("neg");
@@ -144,15 +147,16 @@ function displayQuestion(question, answer, info){
             questionsWrong++;
         }
 
-        //get next question
+        //wait 3 seconds before getting next question
+        //so info can be displayed and read before being cleared.
         setTimeout(function() {
             selectQuestion(trivia);
-            },3000)
-        
-        //reset question timer
-        timePerQuest = 5;
-       // timeStart();
+            }, 3000);
     });
+
+    //reset time for question
+    // timePerQuest = 10;
+    // timeStart();
 }
 
 function changeClassNeg(btn){
@@ -193,6 +197,17 @@ function stop(){
      $("#readout").append("<br>Wrong Answers: "+questionsWrong);
 }
 
+function gameEnd(){
+    //clear other elements on screen
+    $("#start").empty();
+    $("#readout").empty();
+    $(".option").empty();
+    $("#more-info").empty();
+    
+    //print message to DOM
+    $("#readout").text("All questions answered. Game Over!").addClass("gameOver");
+}
+
 // MAIN PROCESS
 //=========================
 function start(){
@@ -200,6 +215,11 @@ function start(){
     $("#start").empty();
     $("#readout").empty();
     $("#more-info").empty();
+
+    //reset variables
+    questionsAsked = 0;
+    questionsCorrect = 0;
+    questionsWrong = 0;
 
     //write instructions to DOM
     $("#readout").append("<p>You have 10 seconds to answer each question once you press START.  If you don't answer a question in time, you lose a point.</p>")
@@ -214,7 +234,7 @@ function start(){
         $("#start").empty();
 
         selectQuestion(trivia);
-        //timeStart();
+        // timeStart();
 
         //write true btn to DOM
         tBtn.attr("id", "affirmative").attr("value", "true").addClass("btn btn-info").text("True");
