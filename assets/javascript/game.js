@@ -68,12 +68,28 @@ var trivia = [
     },
 ];
 
+var trivia2 = [
+    {
+        q:"If you touch a baby bird it's mother will reject it",
+        a:false,
+        info:"Many birds have a limited sense of smell and cannot detect human scent, or if they can detect it, do not react to it",
+        asked: false,
+    },
+    {
+        q:"Goats have rectangular pupils",
+        a:true,
+        info:"This shape helps goats see 280 degrees around their bodies",
+        asked: false,
+    },
+];
+
 var question=[];
 var timePerQuest = 10;
 var intervalId;
 var questionsAsked = 0;
 var questionsCorrect = 0;
 var questionsWrong = 0;
+var wasClicked = 0;
 
 var tBtn = $("<button>");
 var fBtn = $("<button>");
@@ -82,6 +98,8 @@ var fBtn = $("<button>");
 // FUNCTIONS
 //=========================
 function selectQuestion(arr){
+    wasClicked = 0;
+    console.log("wasClicked = ", wasClicked);
     var numberOfItems = arr.length;
     //console.log("# of items in array "+ numberOfItems);
     
@@ -129,29 +147,34 @@ function displayQuestion(question){
 
     //on click of button ture or false
     $(".option").on("click", function(){
-        // console.log("this: ", this);
-        const valueOfButton = $(this).children().attr('value');
-        console.log("valueOfButton is " +  valueOfButton);
-    
-        //compares strings: ans = value of button clicked?
-        if(String(answer) === valueOfButton){
-           // $(this).children().addClass("affirm");
-           changeClassAff($(this).children());
-            $("#more-info").html("<p> Correct! <br>"+ info+ "</p>");
-            questionsCorrect++;
-        }
-        else if(String(answer) !== valueOfButton){
-            //$(this).children().addClass("neg");
-            changeClassNeg($(this).children());
-            $("#more-info").html("<p>Wrong! <br>"+ info+ "</p>");
-            questionsWrong++;
-        }
+        if (wasClicked === 0){
+            // wasClicked = 1;
+            // console.log("this: ", this);
+            const valueOfButton = $(this).children().attr('value');
+            console.log("valueOfButton is " +  valueOfButton);
+            console.log("======= end of question =======");
+        
+            //compares strings: ans = value of button clicked?
+            if(String(answer) === valueOfButton){
+            // $(this).children().addClass("affirm");
+            changeClassAff($(this).children());
+                $("#more-info").html("<p> Correct! <br>"+ info+ "</p>");
+                questionsCorrect++;
+            }
+            else if(String(answer) !== valueOfButton){
+                //$(this).children().addClass("neg");
+                changeClassNeg($(this).children());
+                $("#more-info").html("<p>Wrong! <br>"+ info+ "</p>");
+                questionsWrong++;
+            }
+            wasClicked = 1;
 
-        //wait 3 seconds before getting next question
-        //so info can be displayed and read before being cleared.
-        setTimeout(function() {
-            selectQuestion(trivia);
-            }, 3000);
+            //wait 3 seconds before getting next question
+            //so info can be displayed and read before being cleared.
+            setTimeout(function() {
+                selectQuestion(trivia2);
+                }, 3000);
+        }
     });
 
     //reset time for question
@@ -205,7 +228,8 @@ function gameEnd(){
     $("#more-info").empty();
     
     //print message to DOM
-    $("#readout").text("All questions answered. Game Over!").addClass("gameOver");
+    $("#readout").text("All questions answered. Game Over!").addClass("gameOver").append("<br>Correct Answers: "+questionsCorrect + "<br>Wrong Answers: "+questionsWrong);
+
 }
 
 // MAIN PROCESS
@@ -233,7 +257,7 @@ function start(){
     $("#startBtn").on("click", function(){
         $("#start").empty();
 
-        selectQuestion(trivia);
+        selectQuestion(trivia2);
         // timeStart();
 
         //write true btn to DOM
