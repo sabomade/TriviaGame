@@ -84,9 +84,10 @@ var trivia2 = [
 ];
 
 var question=[];
-var timePerQuest = 5;
+var timePerQuest = 6;
 var intervalId;
 var questionsAsked = 0;
+var questionsAnswered = 0;
 var questionsUnanswered;
 var questionsCorrect = 0;
 var questionsWrong = 0;
@@ -119,15 +120,16 @@ function selectQuestion(arr){
 }
 
 function displayQuestion(question, arr){
-    //reset time for question
-    timePerQuest = 5;
+    //reset time for question & clear #readout
+    $("#readout").empty();
+    timePerQuest = 6;
     timeStart();
 
     //set question.asked to true & increase counter
     question.asked = true;
     questionsAsked++;
     var totalNumOfQuestions = arr.length;
-    questionsUnanswered = totalNumOfQuestions - questionsAsked;
+    // questionsUnanswered = (totalNumOfQuestions - questionsAsked) + wasClicked;
 
     //clear divs
     $("#more-info").empty();
@@ -169,7 +171,10 @@ function displayQuestion(question, arr){
 
     //on click of button ture or false
     $(".option").on("click", function(){
+        //stop timer
+        stop();
         if (wasClicked === 0){
+            questionsAnswered++;
             //console.log("this: ", this);
             var valueOfButton = $(this).children().attr('value');
             console.log("valueOfButton is " +  valueOfButton);
@@ -196,6 +201,7 @@ function displayQuestion(question, arr){
                 }, 3000);
         }
     });
+    questionsUnanswered = totalNumOfQuestions - questionsAnswered;
 }
 
 function changeClassNeg(btn){
@@ -226,29 +232,19 @@ function decrement(){
     $("#readout").text("Time: " +timePerQuest).addClass("timer gameOver");
 
     if(timePerQuest === 0){
-        stop();
+        gameEnd();
     }
 }
 
 function stop(){
     clearInterval(intervalId);
     intervalId = 0;
-
-    //clear divs
-    $("#start").empty();
-    $("#readout").empty();
-    $("#choice").empty();
-    $("#more-info").empty();
-
-     //print message to DOM
-     $("#readout").text("Time's Up!").addClass("gameOver");
-     $("#readout").append("<br>Correct Answers: "+questionsCorrect);
-     $("#readout").append("<br>Wrong Answers: "+questionsWrong);
-     $("#readout").append("<br>Questions Unanswered: "+questionsUnanswered);
-
 }
 
 function gameEnd(){
+    //stop timer
+    stop();
+
     //clear other elements on screen
     $("#start").empty();
     $("#readout").empty();
@@ -256,7 +252,7 @@ function gameEnd(){
     $("#more-info").empty();
     
     //print message to DOM
-    $("#readout").text("All questions answered. Game Over!").addClass("gameOver").append("<br>Correct Answers: "+questionsCorrect + "<br>Wrong Answers: "+questionsWrong+ "<br>Questions Unanswered: "+questionsUnanswered);
+    $("#readout").text("Game Over!").addClass("gameOver").append("<br>Correct Answers: "+questionsCorrect + "<br>Wrong Answers: "+questionsWrong+ "<br>Questions Unanswered: "+questionsUnanswered);
 }
 
 // MAIN PROCESS
@@ -273,7 +269,7 @@ function start(){
     questionsWrong = 0;
 
     //write instructions to DOM
-    $("#readout").append("<p>You have 10 seconds to answer each question once you press START.  If you don't answer a question in time, you lose.</p>")
+    $("#readout").append("<p>You have 5 seconds to answer each question once you press START.  If you don't answer a question in time, you lose.</p>")
 
     //write start button to DOM
     var newBtn = $("<button>");
